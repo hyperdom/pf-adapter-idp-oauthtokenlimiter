@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+#*
+The server renders this HTML page in an end-user's browser when
+needed authentication credentials may be obtained via HTTP Basic
+Authentication or an HTML form.
+
+Velocity variables (identified by the $ character) are generated
+at runtime by the server.
+
+The following variables are available on this page, but not used by default:
+
+$entityId       - The entity id (connection id) of the SP Connection used in this SSO transaction
+$connectionName - The name of the SP Connection used in this SSO transaction
+
+Change text or formatting as needed. Modifying Velocity statements
+is not recommended as it may interfere with expected server behavior.
+*#
+
+<!-- template name: html.form.login.template.html -->
+
+#set( $messageKeyPrefix = "html.form.oauth2tokenlimiter.error." )
+
+<html lang="$locale.getLanguage()" dir="ltr">
+<head>
+    <title>$templateMessages.getMessage($messageKeyPrefix, "title")</title>
+    <base href="$PingFedBaseURL"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/main.css"/>
+</head>
+<body>
+<div class="ping-container ping-signin">
+    <div class="ping-header">
+        $templateMessages.getMessage($messageKeyPrefix, "title")
+    </div>
+    <!-- .ping-header -->
+    <div class="ping-body-container">
+        <div class="section-title">
+            $templateMessages.getMessage($messageKeyPrefix, "headerMessage")
+        </div>
+        <div class="ping-input-label">
+                <p>Please remove at least $requestRemoveSize
+                        #if($requestRemoveSize>1)
+                                sessions
+                        #else
+                                session
+                        #end
+                         before continuing.</p><p>&nbsp;</p>
+        </div>
+        <div>
+<script type="text/javascript">
+var monthNames = [
+  "January", "February", "March",
+  "April", "May", "June", "July",
+  "August", "September", "October",
+  "November", "December"
+];
+    function getDateFromLong(ms)
+    {
+       var d = new Date(0);
+       d.setUTCMilliseconds(Number(ms));
+       var day = d.getDate();
+       var monthIndex = d.getMonth();
+       var year = d.getFullYear();
+
+       var hour = d.getHours();
+       var min = d.getMinutes();
+
+       return day + ' ' + monthNames[monthIndex] + ' ' + year + ' ' + hour + ':' + min;
+//return d.toString("MMM dd");
+    }
+</script>
+            <form method="POST" action="$action" autocomplete="off">
+                <div class="ping-input-label">
+<table>
+<tr>
+        <th>&nbsp;</th><th style="width:200px;text-align:left;font-weight:bold">Client</th><th style="text-align:left; font-weight:bold;">Issued Date</th>
+</tr>
+        #foreach($grant in $grants)
+<tr>
+                <td style="height:30px; vertical-align: middle;"><input type="checkbox" name="HTML_REVOKE_OPTION" value="$grant.getGuid()"/></td>
+                <td style="vertical-align: middle">$grant.getClientId()</td>
+                <td style="vertical-align: middle"><script type="text/javascript">document.write(getDateFromLong($grant.getIssued()));</script></td>
+</tr>
+        #end
+</table>                </div>
+
+                <div class="ping-buttons">
+                    <input type="hidden" name="$ok" value=""/>
+                    <input type="hidden" name="$cancel" value=""/>
+
+                    <a href="javascript:void(0)" onclick="postOk();" class="ping-button normal allow" title="$templateMessages.getMessage($messageKeyPrefix, "signInButtonTitle")">
+                        $templateMessages.getMessage($messageKeyPrefix, "signInButtonTitle")
+                    </a>
+
+                </div><!-- .ping-buttons -->
+
+            </form>
+
+        </div><!-- .ping-body -->
+    </div><!-- .ping-body-container -->
+    <div class="ping-footer-container">
+        <div class="ping-footer">
+            <div class="ping-credits"/>
+        </div> <!-- .ping-footer -->
+    </div> <!-- .ping-footer-container -->
+</div><!-- .ping-container -->
+
+<script type="text/javascript">
+
+    function postOk() {
+        document.forms[0]['$ok'].value = 'clicked';
+        document.forms[0].submit();
+    }
+    function postCancel() {
+        document.forms[0]['$cancel'].value = 'clicked';
+        document.forms[0].submit();
+    }
+</script>
+
+</body>
+</html>
