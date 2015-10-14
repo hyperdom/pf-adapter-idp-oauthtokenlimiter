@@ -63,21 +63,25 @@ public class OAuth2TokenLimitingAdapter implements IdpAuthenticationAdapterV2 {
 	
 	private final Comparator<AccessGrant> ACCESS_TOKEN_COMPARE_EXPIRY = new Comparator<AccessGrant>() {
 		public int compare(AccessGrant grant1, AccessGrant grant2) {
-			AccessGrant grantLeft = grant1;
-			AccessGrant grantRight = grant2;
 			
 			if(revokeMethod.equals(OAUTH2_REVOKE_LIFO))
 			{
-				grantLeft = grant2;
-				grantRight = grant1;
+				if(grant1.getIssued() > grant2.getIssued())
+					return 1;
+				else if(grant1.getIssued() < grant2.getIssued())
+					return -1;
+				else
+					return 0;
 			}
-			
-			if(grantLeft.getIssued() > grantRight.getIssued())
-				return 1;
-			else if(grantLeft.getIssued() < grantRight.getIssued())
-				return -1;
 			else
-				return 0;
+			{
+				if(grant1.getIssued() < grant2.getIssued())
+					return 1;
+				else if(grant1.getIssued() > grant2.getIssued())
+					return -1;
+				else
+					return 0;
+			}
 		}
 	};
 
@@ -99,7 +103,7 @@ public class OAuth2TokenLimitingAdapter implements IdpAuthenticationAdapterV2 {
 	private String revokeMethod = DEFAULT_REVOKE_METHOD;
 
 	/**
-	 * Constructor for the Adapter. Initializes the authentication
+	 * Constructor for the Sample Subnet Adapter. Initializes the authentication
 	 * adapter descriptor so PingFederate can generate the proper configuration
 	 * GUI
 	 */
